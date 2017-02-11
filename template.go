@@ -123,3 +123,25 @@ func (c *Client) TemplateUpdate(req *TemplateUpdateRequest) (*Template, error) {
 
 	return &res, nil
 }
+
+type TemplateDeleteRequest struct {
+	Name string `json:"name"`
+}
+
+func (c *Client) TemplateDelete(req *TemplateDeleteRequest) (*Template, error) {
+	resp, body, errs := c.newRequest("/templates/delete.json").Send(req).End()
+	if len(errs) > 0 {
+		return nil, errs[0]
+	}
+
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		return nil, c.parseError(body)
+	}
+
+	var res Template
+	if err := json.Unmarshal([]byte(body), &res); err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
